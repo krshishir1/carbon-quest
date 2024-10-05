@@ -11,10 +11,13 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+      fontFamily: {
+        'protest': ["Protest Strike", "sans-serif"],
+        'playfair': ["Playfair Display", "serif"],
       },
+      colors: {
+        'accent': '#86efac'
+      }
     },
   },
   plugins: [nextui()],
