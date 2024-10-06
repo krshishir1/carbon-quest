@@ -72,7 +72,7 @@ export default function TransportOnboard({setOnboard}) {
             type="number"
             step={0.01}
             value={inputAnswer}
-            placeholder="10km"
+            placeholder={`in ${mcqAnswer?.unit}`}
             onChange={(e) => setInputAnswer(Number(e.target.value))}
             className="w-full border border-neutral-300 rounded-lg px-3 py-2 mt-5"
           />

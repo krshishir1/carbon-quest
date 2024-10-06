@@ -3,7 +3,7 @@ import Link from "next/link"
 
 export default function DashboardNavbar() {
     return (
-        <nav className="bg-transparent border-b-2 border-green-500/25 py-3">
+        <nav className="bg-transparent border-b-2 border-green-500/25 py-3 sticky top-0">
             <div className="container mx-auto">
                 <div className="flex justify-between">
                     <div className="logo">
