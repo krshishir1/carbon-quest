@@ -8,7 +8,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useState, useEffect } from "react";
 
 import { format } from "date-fns";
-import axios from "axios";
+import { axiosInstanceWithoutToken } from "@/utils/axiosConfig";
 
 export default function Track() {
   const {
@@ -26,20 +26,19 @@ export default function Track() {
     try {
       let user = localStorage.getItem("user");
       user = await JSON.parse(user);
-      const request = {
-        url: "http://localhost:3000/tracks/answers",
+
+      const {data} = await axiosInstanceWithoutToken({
+        url: "/tracks/answers",
         method: "GET",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
         },
         params: {
           userId: user._id,
           dateCreated: format(currentDate, "d MMMM yyyy"),
         },
-      };
+      });
 
-      const { data } = await axios(request);
-      console.log(data)
       let totalEmmissions = 0;
       data.answers.forEach((el) => {
         totalEmmissions += el.emissions;
@@ -56,8 +55,10 @@ export default function Track() {
   }, []);
 
   const filteredAnswers = answers.filter((el) => {
-    if(currentOption === "Transportation") return el.trackOptType === "transport";
-    if(currentOption === "Energy Consumption") return el.trackOptType === "energy";
+    if (currentOption === "Transportation")
+      return el.trackOptType === "transport";
+    if (currentOption === "Energy Consumption")
+      return el.trackOptType === "energy";
   });
 
   return (
@@ -98,8 +99,12 @@ export default function Track() {
         <div className="w-3/4 bg-neutral-200/50 min-h-96 px-10 py-15 rounded-xl pt-10">
           {showOnboard ? (
             <>
-            {currentOption === "Transportation" && <TransportOnboard setOnboard={setShowOnboard} />}
-            {currentOption === "Energy Consumption" && <EnergyConsumption setOnboard={setShowOnboard} />}
+              {currentOption === "Transportation" && (
+                <TransportOnboard setOnboard={setShowOnboard} />
+              )}
+              {currentOption === "Energy Consumption" && (
+                <EnergyConsumption setOnboard={setShowOnboard} />
+              )}
             </>
           ) : (
             <div className="flex flex-wrap gap-10">
@@ -113,11 +118,13 @@ export default function Track() {
                       {Object.keys(answer).map((key, index) => {
                         let title = key.charAt(0).toUpperCase() + key.slice(1);
                         let exclude = ["trackOptType"].includes(key);
-                        return !exclude && (
-                          <div className="flex gap-1 justify-between">
-                            <h4>{title}:  </h4>
-                            <p>{answer[key]}</p>
-                          </div>
+                        return (
+                          !exclude && (
+                            <div className="flex gap-1 justify-between">
+                              <h4>{title}: </h4>
+                              <p>{answer[key]}</p>
+                            </div>
+                          )
                         );
                       })}
                     </div>

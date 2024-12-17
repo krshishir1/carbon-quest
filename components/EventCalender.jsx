@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import trackStore from "@/store/trackStore";
 import { useRouter } from "next/navigation";
 
-import axios from "axios"
-
 import {
   format,
   startOfMonth,
@@ -12,11 +10,14 @@ import {
   eachDayOfInterval,
   getDay,
   addMonths,
+  subDays,
+  isBefore,
 } from "date-fns";
 
 const Weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { axiosInstanceWithoutToken } from "@/utils/axiosConfig";
 
 export default function EventCalender() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -25,7 +26,6 @@ export default function EventCalender() {
   const lastDayOfMonth = endOfMonth(currentDate);
 
   const { changeCurrentDate } = trackStore();
-
   const router = useRouter();
 
   const daysInMonth = eachDayOfInterval({
@@ -39,35 +39,51 @@ export default function EventCalender() {
         let user = localStorage.getItem("user");
         user = await JSON.parse(user);
 
-        const request = {
-          url: "http://localhost:3000/tracks/history",
+        const { data } = await axiosInstanceWithoutToken({
+          url: "/tracks/history",
           method: "GET",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("jwt")}`,
           },
           params: {
             userId: user._id,
           },
-        };
+        });
 
-        const { data } = await axios(request);
+        const arr = data.history.sort((a, b) => a.dateOfTrack - b.dateOfTrack);
+        const newArr = [];
 
-        const arr = data.history.sort((a, b) => a.dateOfTrack - b.dateOfTrack)
-        const newArr = []
-        
         for (let i = 0; i < arr.length; i++) {
-            if(i === 0) {
-                newArr.push(arr[i])
-                continue
-            }
+          if (i === 0) {
+            newArr.push(arr[i]);
+            continue;
+          }
 
-            let diff = (arr[i].totalEmissions - arr[i-1].totalEmissions)
+          let diff = arr[i].totalEmissions - arr[i - 1].totalEmissions;
 
-            const percentageIn =  diff * 100 / arr[i-1].totalEmissions
+          const percentageIn = (diff * 100) / arr[i - 1].totalEmissions;
 
-            arr[i].percentage = percentageIn
+          console.log(percentageIn);
 
-            newArr.push(arr[i])
+          arr[i].percentage = percentageIn;
+
+          if (
+            arr[i - 1].percentage < 0 &&
+            arr[i - 2].percentage < 0 &&
+            arr[i].percentage < 0
+          ) {
+            arr[i].badge = "happy";
+          }
+
+          if (arr[i].percentage > 50) {
+            arr[i].badge = "sad";
+          }
+
+          if (arr[i].percentage > 20 && arr[i].percentage < 50) {
+            arr[i].badge = "warm";
+          }
+
+          newArr.push(arr[i]);
         }
 
         setTrackHistory([...newArr]);
@@ -142,28 +158,48 @@ export default function EventCalender() {
             (track) => format(track.dateOfTrack, "yyyy-MM-dd") === dateKey
           );
 
-          //   trackHistory.
-
           return (
             <div
               key={`day-${index}`}
-              className="group border border-neutral-100 h-24 select-none"
+              className="group border border-neutral-100 h-28 select-none"
             >
               <div className="px-2 pt-1">
                 <p className="text-sm">{format(day, "d")}</p>
                 {dataAv && (
-                    <h2 className="text-xl text-neutral-500 font-bold text-right">{dataAv.totalEmissions}</h2>
+                  <h2 className="text-xl text-neutral-500 font-bold text-right">
+                    {dataAv.totalEmissions}
+                  </h2>
                 )}
                 {dataAv?.percentage && (
-                    <p className={`text-sm text-right ${dataAv.percentage > 0 ? "text-red-500" : "text-green-500"}`}>{dataAv.percentage.toFixed(2)}%</p>
+                  <p
+                    className={`text-sm text-right ${
+                      dataAv.percentage > 0 ? "text-red-500" : "text-green-500"
+                    }`}
+                  >
+                    {dataAv.percentage.toFixed(2)}%
+                  </p>
                 )}
               </div>
-              <button
-                onClick={() => handleNewTrack(day)}
-                className="hidden group-hover:block gradient-btn text-xs p-1 rounded"
-              >
-                Add track
-              </button>
+
+              <div className="flex justify-between px-4 pb-2">
+                {dataAv?.badge === "sad" && (
+                  <img src="/earth-sad.png" className="w-6" />
+                )}
+                {dataAv?.badge === "warm" && (
+                  <img src="/earth-warm.png" className="w-6" />
+                )}
+                {dataAv?.badge === "happy" && (
+                  <img src="/earth-happy.png" className="w-8" />
+                )}
+                {true && (
+                  <button
+                    onClick={() => handleNewTrack(day)}
+                    className="hidden group-hover:block gradient-btn text-xs p-1 rounded"
+                  >
+                    Add track
+                  </button>
+                )}
+              </div>
             </div>
           );
         })}

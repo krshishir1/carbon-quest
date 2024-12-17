@@ -8,14 +8,14 @@ export default function Home() {
   return (
     <>
       <Header />
-      <section className="h-screen mt-8 max-w-[70rem] mx-auto">
+      <section className="md:h-screen p-5 w-full mt-8 max-w-[70rem] mx-auto">
         <h1 className="font-playfair text-6xl font-medium uppercase mb-6">
           Discover your Impact
         </h1>
-        <div className="h-[32rem] w-full bg-neutral-400 overflow-hidden">
+        <div className="h-[32rem] w-full md:bg-neutral-400 overflow-hidden">
           <Image src="/download.jpeg" height={800} width={1200} />
         </div>
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mt-4">
           <p className="max-w-[40rem]">
             Welcome to CarbonQuest, where you can easily track your carbon
             emissions and progress. Join us in the mission towards a greater
@@ -30,8 +30,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="h-screen mt-10 flex flex-col justify-center align-center bg-grad">
-        <div className="w-[70rem] mx-auto">
+      <section className="h-screen mt-10 flex flex-col justify-center align-center bg-gradient-to-r from-green-300 to-green-400">
+        <div className="md:w-[70rem] px-6 mx-auto">
           <div className="border-b pb-10 border-black">
             <h1 className="text-5xl font-playfair font-medium uppercase text-white">
               About carbonquest
@@ -45,17 +45,17 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid place-items-center min-h-screen mb-[20rem]">
-        <div className="">
+      <section className="min-h-screen mb-[20rem]">
+        <div className="w-full md:w-3/4 mx-auto">
           <h1 className="text-5xl font-medium font-playfair text-center mt-[5rem]">
             Why CarbonQuest?
           </h1>
           <div className="mt-16 flex flex-col gap-[6rem]">
-            <div className="flex gap-32 items-center justify-between">
-              <div className="h-[25rem] w-[40rem] relative">
+            <div className="flex flex-col gap-8 md:flex-row gap-32 items-center justify-between">
+              <div className="h-[25rem] md:w-[40rem] w-full relative">
                 <Image src="/feature1.png" fill />
               </div>
-              <div className="max-w-[24rem]">
+              <div className="max-w-[24rem] p-4">
                 <h2 className="font-medium leading-[26px] mb-4 text-3xl">
                   Personalized Carbon Insights
                 </h2>
@@ -66,8 +66,8 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="flex gap-32 items-center justify-between">
-              <div className="max-w-[24rem]">
+            <div className="flex flex-col gap-8 md:flex-row gap-32 items-center justify-between">
+              <div className="max-w-[24rem] md:w-[40rem] w-full relative p-4">
                 <h2 className="font-medium leading-[26px] mb-4 text-3xl">
                   Interactive Visualizations
                 </h2>
@@ -77,7 +77,7 @@ export default function Home() {
                   easier to target areas for improvement.
                 </p>
               </div>
-              <div className="h-[25rem] w-[40rem] relative border shadow-lg rounded">
+              <div className="h-[25rem] md:w-[40rem] w-full relative">
                 <Image src="/feature2.jpeg" fill />
               </div>
             </div>

@@ -1,10 +1,8 @@
 import { create } from "zustand";
-
 import { format } from "date-fns"
+import { axiosInstance, axiosInstanceWithoutToken } from "@/utils/axiosConfig";
 
-const default_trackOptions = ["Transportation", "Energy Consumption", "Diet", "Waste Management"]
-
-import axios from "axios"
+const default_trackOptions = ["Transportation", "Energy Consumption"]
 
 const trackStore = create((set) => ({
     trackOptions: default_trackOptions,
@@ -29,22 +27,18 @@ const trackStore = create((set) => ({
             let user = localStorage.getItem("user")
             user = JSON.parse(user) 
 
-            console.log(dateCreated, answers, user)
-
-            const request = {
+            await axiosInstanceWithoutToken({
                 method: "POST",
-                url: "http://localhost:3000/tracks/create",
+                url: "/tracks/create",
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`
                 },
                 data: {
                     userId: user._id,
                     dateCreated: format(dateCreated, "d MMMM yyyy"),
                     answers
                 }
-            }
-
-            await axios(request)
+            })
 
         } catch(err) {
             console.log(err.data)
